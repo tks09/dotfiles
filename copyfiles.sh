@@ -17,6 +17,7 @@ echo "source $HOME/.dotfiles/bashrc" >> $HOME/.bashrc
 
 echo "- zshrc"
 echo "source $HOME/.dotfiles/zshrc" >> $HOME/.zshrc
+
 echo "- tmux.conf"
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ln -sf $SCRIPTPATH/tmux.conf ~/.tmux.conf
@@ -26,6 +27,9 @@ ln -sf $SCRIPTPATH/vim ~/.vim
 
 echo "- neovim/"
 ln -sf $SCRIPTPATH/nvim ~/.config/nvim
+
+echo "- fish/"
+ln -sf $SCRIPTPATH/fish ~/.config/fish
 
 echo "- creating vim_local"
 touch $SCRIPTPATH/vim_local
