@@ -25,9 +25,6 @@ ln -sf $SCRIPTPATH/tmux.conf ~/.tmux.conf
 echo "- vim/"
 ln -sf $SCRIPTPATH/vim ~/.vim
 
-echo "- neovim/"
-ln -sf $SCRIPTPATH/nvim ~/.config/nvim
-
 echo "- fish/"
 ln -sf $SCRIPTPATH/fish ~/.config/fish
 
