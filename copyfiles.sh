@@ -1,35 +1,49 @@
 #!/bin/bash
+set -euo pipefail
 
-# Absolute path to this script. /home/user/bin/foo.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib.sh"
 
-# Absolute path this script is in. /home/user/bin
-SCRIPTPATH=~/.dotfiles
+SCRIPTPATH="$SCRIPT_DIR"
+
+append_once() {
+    local line="$1"
+    local file="$2"
+
+    touch "$file"
+    if ! grep -qxF "$line" "$file"; then
+        echo "$line" >> "$file"
+    fi
+}
 
 echo "linking files..."
+
 echo "- vimrc"
-ln -sf $SCRIPTPATH/vimrc ~/.vimrc
+ln -sfn "$SCRIPTPATH/vimrc" "$HOME/.vimrc"
 
 echo "- gitconfig"
-ln -sf $SCRIPTPATH/gitconfig ~/.gitconfig
+ln -sfn "$SCRIPTPATH/gitconfig" "$HOME/.gitconfig"
 
 echo "- bashrc"
-echo "source $HOME/.dotfiles/bashrc" >> $HOME/.bashrc
+append_once "source $SCRIPTPATH/bashrc" "$HOME/.bashrc"
 
 echo "- zshrc"
-echo "source $HOME/.dotfiles/zshrc" >> $HOME/.zshrc
+append_once "source $SCRIPTPATH/zshrc" "$HOME/.zshrc"
 
 echo "- tmux.conf"
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-ln -sf $SCRIPTPATH/tmux.conf ~/.tmux.conf
+mkdir -p "$HOME/.tmux/plugins"
+clone_if_missing https://github.com/tmux-plugins/tpm.git "$HOME/.tmux/plugins/tpm"
+ln -sfn "$SCRIPTPATH/tmux.conf" "$HOME/.tmux.conf"
 
 echo "- vim/"
-ln -sf $SCRIPTPATH/vim ~/.vim
+ln -sfn "$SCRIPTPATH/vim" "$HOME/.vim"
 
 echo "- fish/"
-ln -sf $SCRIPTPATH/fish ~/.config/fish
+mkdir -p "$HOME/.config"
+ln -sfn "$SCRIPTPATH/fish" "$HOME/.config/fish"
 
 echo "- creating vim_local"
-touch $SCRIPTPATH/vim_local
+touch "$SCRIPTPATH/vim_local"
 
 echo "- assume unchanged"
-bash assume-unchanged.sh
+"$SCRIPT_DIR/assume-unchanged.sh"

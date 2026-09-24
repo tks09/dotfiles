@@ -1,22 +1,19 @@
 #!/bin/bash
+set -euo pipefail
 
-BACKUP_DIR="$HOME/.dotfiles-backup/ohmyzsh-$(date +%Y%m%d%H%M%S)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib.sh"
 
-if [ -d "$HOME/.oh-my-zsh" ] || [ -f "$HOME/.zshrc" ]; then
-    mkdir -p "$BACKUP_DIR"
-    echo "backing up existing configuration to $BACKUP_DIR"
+if [ -e "$HOME/.oh-my-zsh" ]; then
+    echo "oh-my-zsh already installed, updating plugins only"
+else
+    backup_existing ohmyzsh "$HOME/.zshrc"
 
-    if [ -d "$HOME/.oh-my-zsh" ]; then
-        mv "$HOME/.oh-my-zsh" "$BACKUP_DIR/.oh-my-zsh"
-    fi
-
-    if [ -f "$HOME/.zshrc" ]; then
-        mv "$HOME/.zshrc" "$BACKUP_DIR/.zshrc"
-    fi
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
 
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+clone_if_missing https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_CUSTOM/plugins/zsh-autosuggestions"

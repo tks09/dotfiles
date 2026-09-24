@@ -1,19 +1,16 @@
 #!/bin/bash
+set -euo pipefail
 
-BACKUP_DIR="$HOME/.dotfiles-backup/astronvim-$(date +%Y%m%d%H%M%S)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib.sh"
 
-if [ -d "$HOME/.config/nvim" ]; then
-    mkdir -p "$BACKUP_DIR"
-    echo "backing up existing configuration to $BACKUP_DIR"
+NVIM_DIR="$HOME/.config/nvim"
 
-    mv "$HOME/.config/nvim" "$BACKUP_DIR/nvim"
-fi
+backup_existing astronvim "$NVIM_DIR"
 
-git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
-rm -rf ~/.config/nvim/.git
+clone_if_missing https://github.com/AstroNvim/AstroNvim.git "$NVIM_DIR"
 
-if [ -d "$HOME/.config/nvim/lua/user" ]; then
-    rm -rf ~/.config/nvim/lua/user
-fi
+rm -rf "$NVIM_DIR/.git"
 
-mv ~/.config/nvim/lua/user_template ~/.config/nvim/lua/user
+rm -rf "$NVIM_DIR/lua/user"
+mv "$NVIM_DIR/lua/user_template" "$NVIM_DIR/lua/user"
